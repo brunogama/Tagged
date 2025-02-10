@@ -1,0 +1,139 @@
+# SwiftFormat config for Tagged library
+# Based on implementation patterns in Tagged+Conformances.swift, Tagged+Numeric.swift, etc.
+
+# Specify version used in a project
+
+--swiftversion 5.9
+
+# File organization
+--header strip
+--importgrouping testable-bottom
+
+# Spacing and organization rules
+--indent 4
+--maxwidth 100
+--wrapcollections before-first
+--wraparguments before-first
+--wrapparameters before-first
+--closingparen same-line
+--commas always
+--semicolons never
+--trimwhitespace always
+--linebreaks lf
+
+# Documentation and comments
+--marktypes always
+--markextensions always
+--extensionacl on-declarations
+--typeattributes prev-line
+--funcattributes prev-line
+--varattributes prev-line
+--enumthreshold 0
+--extensionlength 0
+
+# Explicit rules based on codebase patterns
+--rules                           \
+allman,                          \
+anyObjectProtocol,               \
+blankLinesAroundMark,           \
+blankLinesAtEndOfScope,         \
+blankLinesAtStartOfScope,       \
+blankLinesBetweenScopes,        \
+braces,                         \
+consecutiveBlankLines,          \
+consecutiveSpaces,              \
+docComments,                    \
+duplicateImports,               \
+elseOnSameLine,                 \
+emptyBraces,                    \
+enumNamespaces,                 \
+extensionAccessControl,         \
+genericExtensions,              \
+hoistPatternLet,               \
+indent,                         \
+initCoderUnavailable,          \
+leadingDelimiters,             \
+linebreakAtEndOfFile,          \
+markTypes,                      \
+modifierOrder,                  \
+numberFormatting,              \
+opaqueGenericParameters,       \
+organizeDeclarations,          \
+preferKeyPath,                 \
+redundantBackticks,            \
+redundantBreak,                \
+redundantExtensionACL,         \
+redundantFileprivate,          \
+redundantGet,                  \
+redundantInit,                 \
+redundantLet,                  \
+redundantLetError,             \
+redundantNilInit,              \
+redundantObjc,                 \
+redundantParens,               \
+redundantPattern,              \
+redundantRawValues,            \
+redundantReturn,               \
+redundantSelf,                 \
+redundantType,                 \
+redundantVoidReturnType,       \
+semicolons,                    \
+sortedImports,                 \
+spaceAroundBraces,            \
+spaceAroundBrackets,          \
+spaceAroundComments,          \
+spaceAroundGenerics,          \
+spaceAroundOperators,         \
+spaceAroundParens,            \
+spaceInsideBraces,            \
+spaceInsideBrackets,          \
+spaceInsideComments,          \
+spaceInsideGenerics,          \
+spaceInsideParens,            \
+strongifiedSelf,              \
+todos,                        \
+trailingClosures,             \
+trailingCommas,               \
+trailingSpace,                \
+typeSugar,                    \
+unusedArguments,              \
+void,                         \
+wrap,                         \
+wrapAttributes,               \
+wrapConditionalBodies,        \
+wrapEnumCases,                \
+wrapSwitchCases,              \
+yodaConditions
+
+# Excluded paths
+--exclude Pods,**/.build
+
+# Additional options based on codebase patterns
+--self init-only
+--stripunusedargs closure-only
+--voidtype tuple
+--xcodeindentation enabled
+--assetliterals visual-width
+--beforemarks 
+--aftermarks 
+--organizetypes class,enum,struct,actor,extension,protocol
+--markcategories false
+--elseposition same-line
+--guardelse next-line
+--emptybraces spaced
+--ranges spaced
+--operatorfunc spaced
+--nospaceoperators ..<,...
+--nowrapoperators 
+--wrapternary before-operators
+--wrapconditions preserve
+--wrapcollections preserve
+--wrapreturntype preserve
+--wrapenumcases always
+--wrapeffects preserve
+--funcattributes preserve
+--typeattributes preserve
+--varattributes preserve
+--modifierorder public,private,fileprivate,internal,final,override,static,class,convenience,required,lazy,weak,unowned,mutating,nonmutating,prefix,infix,postfix,optional,dynamic,rethrows,throws,indirect,isolated,nonisolated,async,await
+
+# https://github.com/NoemiRozpara/Google-SwiftFormat-Config
