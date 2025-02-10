@@ -114,8 +114,8 @@ yodaConditions
 --voidtype tuple
 --xcodeindentation enabled
 --assetliterals visual-width
---beforemarks 
---aftermarks 
+--beforemarks
+--aftermarks
 --organizetypes class,enum,struct,actor,extension,protocol
 --markcategories false
 --elseposition same-line
@@ -124,7 +124,7 @@ yodaConditions
 --ranges spaced
 --operatorfunc spaced
 --nospaceoperators ..<,...
---nowrapoperators 
+--nowrapoperators
 --wrapternary before-operators
 --wrapconditions preserve
 --wrapcollections preserve

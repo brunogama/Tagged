@@ -115,4 +115,4 @@ public func / <TypeTag, TagRawValue: BinaryFloatingPoint>(
     rhs: TagRawValue
 ) -> Tagged<TypeTag, TagRawValue> {
     Tagged<TypeTag, TagRawValue>(lhs.rawValue / rhs)
-} 
+}

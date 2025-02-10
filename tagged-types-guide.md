@@ -62,7 +62,7 @@ typealias EUR = Tagged<EURTag, Decimal>
 
 struct Product {
     let price: USD
-    
+
     func applyDiscount(_ percentage: Double) -> USD {
         return USD(self.price.rawValue * (1 - percentage))
     }
@@ -88,7 +88,7 @@ typealias UnvalidatedEmail = Tagged<UnvalidatedTag, String>
 struct UserService {
     // Only accepts validated emails
     func createUser(email: ValidatedEmail) { ... }
-    
+
     // Validation function that converts unvalidated to validated
     func validate(_ email: UnvalidatedEmail) -> Result<ValidatedEmail, ValidationError> {
         guard email.rawValue.contains("@") else {
@@ -124,7 +124,7 @@ typealias WebURL = Tagged<WebURLTag, URL>
 struct NetworkService {
     // Only accepts API endpoints
     func fetch(from endpoint: APIEndpoint) async throws -> Data { ... }
-    
+
     // Only accepts web URLs
     func openInBrowser(_ url: WebURL) { ... }
 }
@@ -171,7 +171,7 @@ struct Page<T, TagType> {
 protocol Repository<T> {
     associatedtype T
     associatedtype IDTag
-    
+
     func fetch(id: Tagged<IDTag, UUID>) async throws -> T
     func fetchAll(cursor: Tagged<IDTag, String>?) async throws -> Page<T, IDTag>
 }
@@ -217,7 +217,7 @@ struct User: Identifiable, Codable {
 // MARK: - Services
 class AuthenticationService {
     private var sessions: [UserID: SessionToken] = [:]
-    
+
     func login(email: ValidatedEmail, password: String) async throws -> SessionToken {
         // Authentication logic...
         let token = SessionToken(UUID().uuidString)
@@ -225,7 +225,7 @@ class AuthenticationService {
         sessions[userId] = token
         return token
     }
-    
+
     func validate(token: SessionToken) -> Bool {
         sessions.values.contains(token)
     }
@@ -234,11 +234,11 @@ class AuthenticationService {
 // MARK: - API Client
 class APIClient {
     private let apiKey: APIKey
-    
+
     init(apiKey: APIKey) {
         self.apiKey = apiKey
     }
-    
+
     func fetchUser(id: UserID) async throws -> User {
         // API request logic...
     }
@@ -252,7 +252,7 @@ async {
     let email = UnvalidatedEmail("user@example.com")
     if case .success(let validatedEmail) = validate(email) {
         let token = try await authService.login(email: validatedEmail, password: "password")
-        
+
         if authService.validate(token: token) {
             // Fetch user data...
         }

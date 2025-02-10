@@ -37,15 +37,15 @@ import Foundation
 public protocol OptionalType {
     /// The type of the wrapped value
     associatedtype Wrapped
-    
+
     /// Converts this optional-like type to a standard Swift Optional
     @inlinable
     var optional: Optional<Wrapped> { get }
-    
+
     /// Returns an instance representing the absence of a value
     @inlinable
     static var none: Self { get }
-    
+
     /// Creates an instance that wraps the given value
     /// - Parameter wrapped: The value to wrap
     @inlinable
@@ -66,14 +66,14 @@ where TagRawValue: OptionalType {
     public static var none: Self {
         .init(TagRawValue.none)
     }
-    
+
     /// Creates a new instance wrapping the given value
     /// - Parameter value: The value to wrap
     @inlinable
     public init(wrapped value: TagRawValue.Wrapped) {
         self.init(TagRawValue.some(value))
     }
-    
+
     /// The wrapped value, if present
     @inlinable
     public var wrapped: TagRawValue.Wrapped? {

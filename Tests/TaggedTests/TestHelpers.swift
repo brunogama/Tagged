@@ -45,12 +45,12 @@ enum TaggedFixtures {
     static let validList = IntList.fixture([1, 2, 3, 4, 5])
     static let validCounter = Counter.fixture(1)
     static let validOptional = OptionalInt.fixture(42)
-    
+
     static let emptyEmail = Email.fixture("")
     static let zeroPrice = Price.fixture(0.0)
     static let emptyList = IntList.fixture([])
     static let nilOptional = OptionalInt.fixture(nil)
-    
+
     enum Arrays {
         static let integers = Array(1...1000)
         static let doubles = Array(1...1000).map(Double.init)
@@ -63,7 +63,7 @@ struct TestUser: Codable {
     let id: UserID
     let email: Email
     let score: Price
-    
+
     static let fixture = TestUser(
         id: TaggedFixtures.validUserID,
         email: TaggedFixtures.validEmail,
@@ -81,7 +81,7 @@ struct PerformanceTestHelper {
             operation()
         }
     }
-    
+
     static func measureWithResult<T>(
         iterations: Int = 1000,
         operation: () -> T

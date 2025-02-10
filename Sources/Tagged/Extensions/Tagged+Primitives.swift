@@ -107,7 +107,7 @@ extension Tagged {
     where TagRawValue: BinaryInteger {
         self.init(TagRawValue(value))
     }
-    
+
     /// Creates a new instance from a binary integer, if it can be represented exactly
     /// - Parameter value: The binary integer value
     /// - Returns: A new instance if the value can be represented exactly, nil otherwise

@@ -40,20 +40,20 @@ import Foundation
 public struct Tagged<TypeTag, TagRawValue>: TaggedProtocol {
     /// The type tag used to differentiate this tagged value from others
     public typealias Tag = TypeTag
-    
+
     /// The underlying type that stores the actual value
     public typealias RawValue = TagRawValue
 
     /// The wrapped value of the underlying type
     public let rawValue: RawValue
-    
+
     /// Creates a new tagged value wrapping the provided raw value
     /// - Parameter rawValue: The value to wrap
     @inlinable
     public init(_ rawValue: RawValue) {
         self.rawValue = rawValue
     }
-    
+
     /// Alternative initializer that matches the standard library's style
     /// - Parameter value: The value to wrap
     @inlinable

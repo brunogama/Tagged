@@ -41,7 +41,7 @@ extension Tagged: Sequence
 where TagRawValue: Sequence {
     /// The type of iterator that will iterate over the elements
     public typealias Iterator = TagRawValue.Iterator
-    
+
     /// Creates an iterator that will iterate over the elements of this sequence
     @inlinable
     public func makeIterator() -> TagRawValue.Iterator {
@@ -59,18 +59,18 @@ extension Tagged: Collection
 where TagRawValue: Collection {
     /// The type that represents a position in the collection
     public typealias Index = TagRawValue.Index
-    
+
     /// The type of elements in the collection
     public typealias Element = TagRawValue.Element
-    
+
     /// The position of the first element
     @inlinable
     public var startIndex: Index { rawValue.startIndex }
-    
+
     /// The position one past the last element
     @inlinable
     public var endIndex: Index { rawValue.endIndex }
-    
+
     /// Accesses the element at the specified position
     /// - Parameter position: The position of the element to access
     /// - Returns: The element at the specified position
@@ -78,7 +78,7 @@ where TagRawValue: Collection {
     public subscript(position: Index) -> Element {
         rawValue[position]
     }
-    
+
     /// Returns the position immediately after the given index
     /// - Parameter index: A valid index of the collection
     /// - Returns: The next index in the collection

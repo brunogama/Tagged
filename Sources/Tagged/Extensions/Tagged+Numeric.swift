@@ -29,11 +29,11 @@ import Foundation
 public protocol TaggedAdditiveArithmetic {
     /// The underlying type that will perform the actual arithmetic operations
     associatedtype Underlying
-    
+
     /// The zero value for this type
     @inlinable
     static var zero: Self { get }
-    
+
     /// Adds two values of this type
     /// - Parameters:
     ///   - lhs: The first value to add
@@ -44,7 +44,7 @@ public protocol TaggedAdditiveArithmetic {
         _ lhs: Self,
         _ rhs: Self
     ) -> Self
-    
+
     /// Subtracts one value from another
     /// - Parameters:
     ///   - lhs: The value to subtract from
@@ -97,7 +97,7 @@ public protocol TaggedNumericArithmetic: TaggedAdditiveArithmetic {
     /// Creates a new instance from a binary integer, if possible
     init?<T>(exactly source: T)
     where T: BinaryInteger
-    
+
     /// Multiplies two values of this type
     /// - Parameters:
     ///   - lhs: The first value to multiply
@@ -119,7 +119,7 @@ where TagRawValue: Numeric {
         guard let value = TagRawValue(exactly: source) else { return nil }
         self.init(value)
     }
-    
+
     @inlinable
     public static func multiply(
         _ lhs: Tagged<TypeTag, TagRawValue>,
@@ -163,50 +163,50 @@ where TagRawValue: SignedNumeric {
 public protocol TaggedFloatingPointOperations {
     /// The underlying floating-point type
     associatedtype Underlying
-    
+
     /// Whether this value is normal
     @inlinable
     var isNormal: Bool { get }
-    
+
     /// Whether this value is finite
     @inlinable
     var isFinite: Bool { get }
-    
+
     /// Whether this value is zero
     @inlinable
     var isZero: Bool { get }
-    
+
     /// Whether this value is subnormal
     @inlinable
     var isSubnormal: Bool { get }
-    
+
     /// Whether this value is infinite
     @inlinable
     var isInfinite: Bool { get }
-    
+
     /// Whether this value is NaN (Not a Number)
     @inlinable
     var isNaN: Bool { get }
-    
+
     /// Divides a value by another value
     @inlinable
     static func divide(
         _ lhs: Self,
         by rhs: Underlying
     ) -> Self
-    
+
     /// Computes the remainder of dividing this value by another
     @inlinable
     func remainder(dividingBy other: Self) -> Self
-    
+
     /// Computes the square root of this value
     @inlinable
     func squareRoot() -> Self
-    
+
     /// Returns this value rounded to the nearest integer
     @inlinable
     func rounded() -> Self
-    
+
     /// The next representable value in the positive direction
     @inlinable
     var nextUp: Self { get }
@@ -216,22 +216,22 @@ public protocol TaggedFloatingPointOperations {
 extension Tagged: TaggedFloatingPointOperations
 where TagRawValue: FloatingPoint {
     public typealias Underlying = TagRawValue
-    
+
     @inlinable
     public var isNormal: Bool { rawValue.isNormal }
-    
+
     @inlinable
     public var isFinite: Bool { rawValue.isFinite }
-    
+
     @inlinable
     public var isZero: Bool { rawValue.isZero }
-    
+
     @inlinable
     public var isSubnormal: Bool { rawValue.isSubnormal }
-    
+
     @inlinable
     public var isInfinite: Bool { rawValue.isInfinite }
-    
+
     @inlinable
     public var isNaN: Bool { rawValue.isNaN }
 

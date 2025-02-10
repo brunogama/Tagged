@@ -8,7 +8,7 @@
 public protocol TaggedProtocol: RawRepresentable {
     associatedtype Tag
     associatedtype RawValue
-    
+
     @inlinable
     init(_ value: RawValue)
 }
