@@ -11,4 +11,6 @@ public protocol TaggedProtocol: RawRepresentable {
 
     @inlinable
     init(_ value: RawValue)
+    
+    subscript<T>(dynamicMember keyPath: WritableKeyPath<RawValue, T>) -> T { get set }
 }

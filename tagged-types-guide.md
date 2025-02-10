@@ -193,75 +193,197 @@ protocol Repository<T> {
 4. Use Tagged Types for all primitive values that have specific semantic meaning
 5. Combine Tagged Types with value types (structs) for more complex domain models
 
-## Real-World Integration Example
+## Advanced Use Cases
 
-Here's a complete example showing how Tagged Types can be used in a typical application:
+### 1. Function Types and Transformers
+
+Tagged Types can wrap function types, enabling type-safe transformations and function composition:
 
 ```swift
-// MARK: - Type Definitions
-enum UserIDTag {}
-enum SessionTokenTag {}
-enum APIKeyTag {}
+// Define transformation tags
+enum Transform {}
+enum Validation {}
+enum Composition {}
 
-typealias UserID = Tagged<UserIDTag, UUID>
-typealias SessionToken = Tagged<SessionTokenTag, String>
-typealias APIKey = Tagged<APIKeyTag, String>
+// Basic transforms
+typealias UserTransform = Tagged<Transform, (UserData) -> UserDataDTO>
+typealias UserReverseTransform = Tagged<Transform, (UserDataDTO) -> UserData>
+typealias PreferencesTransform = Tagged<Transform, (UserPreferences) -> UserPreferencesDTO>
 
-// MARK: - Models
-struct User: Identifiable, Codable {
-    let id: UserID
-    let email: ValidatedEmail
-    let createdAt: Date
-}
+// Validation functions
+typealias EmailValidator = Tagged<Validation, (String) -> Bool>
+typealias UserValidator = Tagged<Validation, (UserData) -> Bool>
+```
 
-// MARK: - Services
-class AuthenticationService {
-    private var sessions: [UserID: SessionToken] = [:]
+### 2. Function Composition
 
-    func login(email: ValidatedEmail, password: String) async throws -> SessionToken {
-        // Authentication logic...
-        let token = SessionToken(UUID().uuidString)
-        let userId = UserID(UUID())
-        sessions[userId] = token
-        return token
-    }
+Implement custom operators for composing transformations:
 
-    func validate(token: SessionToken) -> Bool {
-        sessions.values.contains(token)
-    }
-}
+```swift
+infix operator >>>>: ComparisonPrecedence
 
-// MARK: - API Client
-class APIClient {
-    private let apiKey: APIKey
-
-    init(apiKey: APIKey) {
-        self.apiKey = apiKey
-    }
-
-    func fetchUser(id: UserID) async throws -> User {
-        // API request logic...
-    }
-}
-
-// MARK: - Usage
-let authService = AuthenticationService()
-let apiClient = APIClient(apiKey: APIKey("your-api-key"))
-
-async {
-    let email = UnvalidatedEmail("user@example.com")
-    if case .success(let validatedEmail) = validate(email) {
-        let token = try await authService.login(email: validatedEmail, password: "password")
-
-        if authService.validate(token: token) {
-            // Fetch user data...
+extension Tagged {
+    static func >>>> <T, U, V>(
+        lhs: Tagged<TypeTag, (T) -> U>,
+        rhs: Tagged<TypeTag, (U) -> V>
+    ) -> Tagged<TypeTag, (T) -> V> {
+        Tagged { input in
+            rhs.rawValue(lhs.rawValue(input))
         }
     }
 }
+
+// Usage example
+extension UserTransform {
+    static let enrichUser = Tagged<Transform, (UserData) -> UserData> { user in
+        var enriched = user
+        enriched.name = user.isVerified ? "\(user.name) ✓" : user.name
+        return enriched
+    }
+    
+    static let enrichedToDTO = enrichUser >>>> toDTO
+}
 ```
+
+### 3. Data Transformation Pipeline
+
+Create type-safe transformation pipelines for your domain models:
+
+```swift
+struct UserData {
+    let id: String
+    let name: String
+    let email: String
+    let isVerified: Bool
+    let joinDate: Date
+}
+
+struct UserDataDTO: Codable {
+    let userId: String
+    let displayName: String
+    let emailAddress: String
+    let verificationStatus: Bool
+    let memberSince: TimeInterval
+}
+
+extension UserTransform {
+    static let toDTO = UserTransform { user in
+        UserDataDTO(
+            userId: user.id,
+            displayName: user.displayName,
+            emailAddress: user.email,
+            verificationStatus: user.isVerified,
+            memberSince: user.joinDate.timeIntervalSince1970
+        )
+    }
+}
+
+extension UserReverseTransform {
+    static let fromDTO = UserReverseTransform { dto in
+        UserData(
+            id: dto.userId,
+            name: dto.displayName,
+            email: dto.emailAddress,
+            isVerified: dto.verificationStatus,
+            joinDate: Date(timeIntervalSince1970: dto.memberSince)
+        )
+    }
+}
+```
+
+### 4. Validation Rules
+
+Build type-safe validation rules:
+
+```swift
+extension EmailValidator {
+    static let isValid = EmailValidator { email in
+        let pattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        return email.range(of: pattern, options: .regularExpression) != nil
+    }
+}
+
+extension UserValidator {
+    static let isValid = UserValidator { user in
+        EmailValidator.isValid.rawValue(user.email) &&
+        !user.name.isEmpty &&
+        user.name.count <= 50
+    }
+    
+    static let canBeVerified = UserValidator { user in
+        isValid.rawValue(user) && !user.isVerified
+    }
+}
+```
+
+### 5. Complete Service Layer Example
+
+Integrate all concepts in a service layer:
+
+```swift
+final class UserService {
+    func fetchUser() async throws -> TypeSafeResponse<TypeSafeUser> {
+        let userData = UserData(
+            id: "123",
+            name: "John Doe",
+            email: "john@example.com",
+            isVerified: true,
+            joinDate: Date()
+        )
+        
+        // Transform to DTO
+        let dto = UserTransform.toDTO.rawValue(userData)
+        
+        // Transform back to domain model with type safety
+        let response = APIResponse(
+            data: TypeSafeUser(UserReverseTransform.fromDTO.rawValue(dto)),
+            metadata: APIMetadata(
+                timestamp: Date(),
+                version: "1.0",
+                cacheControl: .init(isEnabled: true, ttl: 3600)
+            ),
+            status: APIStatus(code: 200, message: "Success")
+        )
+        
+        return TypeSafeResponse(response)
+    }
+    
+    func updateUser(_ user: TypeSafeUser) async throws -> TypeSafeResponse<TypeSafeUser> {
+        guard UserValidator.isValid.rawValue(user.rawValue) else {
+            throw NSError(domain: "UserValidation", code: 400)
+        }
+        
+        // Use composed transformation
+        let dto = UserTransform.enrichedToDTO.rawValue(user.rawValue)
+        
+        // Process and return response...
+        return TypeSafeResponse(/* ... */)
+    }
+}
+```
+
+## Advanced Benefits
+
+1. **Type-Safe Transformations**: Ensure data transformations maintain type safety throughout the pipeline
+2. **Composable Functions**: Build complex transformations from simple, reusable pieces
+3. **Validation Chain**: Create type-safe validation rules that can be composed and reused
+4. **Clean Architecture**: Separate domain models from DTOs while maintaining type safety
+5. **Functional Programming**: Leverage functional programming concepts with type safety
+
+## Best Practices for Advanced Usage
+
+1. **Compose Small Functions**: Build complex transformations by composing smaller, focused functions
+2. **Type-Safe Validation**: Use Tagged Types for validation functions to ensure type safety
+3. **Bidirectional Transforms**: Create pairs of transformations for domain ↔ DTO conversions
+4. **Error Handling**: Use Result type with Tagged Types for better error handling
+5. **Protocol Conformance**: Leverage protocol conformance for collections and numeric operations
 
 ## Conclusion
 
 Tagged Types are a powerful tool for writing safer, more maintainable Swift code. They provide compile-time guarantees that prevent common programming mistakes while adding zero runtime overhead. By using Tagged Types consistently throughout your codebase, you can catch potential bugs early and make your code more self-documenting and easier to maintain.
 
 Remember that the goal is to make invalid states unrepresentable at compile time. Tagged Types are one of the many tools in Swift that help achieve this goal, alongside enums, structs, and the type system in general.
+
+Tagged Types can also go beyond of providing compile-time safety for simple type wrapping to provide a robust foundation for building type-safe transformations, validations, and complex data pipelines. By combining Tagged Types with functional programming concepts like function composition, you can create maintainable, type-safe code that catches errors at compile time rather than runtime.
+
+The advanced patterns shown here demonstrate how Tagged Types can be used to build sophisticated systems while maintaining type safety throughout your application's architecture. Whether you're working with data transformations, validation rules, or complex business logic, Tagged Types provide the tools needed to write safer, more maintainable Swift code.

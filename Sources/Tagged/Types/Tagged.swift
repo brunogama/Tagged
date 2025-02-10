@@ -37,6 +37,7 @@ import Foundation
 ///   - TypeTag: A phantom type used to differentiate between different semantic meanings.
 ///   - TagRawValue: The underlying type that stores the actual value.
 @frozen
+@dynamicMemberLookup
 public struct Tagged<TypeTag, TagRawValue>: TaggedProtocol {
     /// The type tag used to differentiate this tagged value from others
     public typealias Tag = TypeTag
@@ -45,7 +46,7 @@ public struct Tagged<TypeTag, TagRawValue>: TaggedProtocol {
     public typealias RawValue = TagRawValue
 
     /// The wrapped value of the underlying type
-    public let rawValue: RawValue
+    public var rawValue: RawValue
 
     /// Creates a new tagged value wrapping the provided raw value
     /// - Parameter rawValue: The value to wrap
@@ -59,6 +60,27 @@ public struct Tagged<TypeTag, TagRawValue>: TaggedProtocol {
     @inlinable
     public init(rawValue value: RawValue) {
         self.rawValue = value
+    }
+    
+    /// Provides dynamic access to members of the underlying raw value
+    /// - Parameter dynamicMember: The name of the member to access
+    /// - Returns: A function that forwards the member access to the raw value
+    @inlinable
+    public subscript<T>(dynamicMember keyPath: KeyPath<TagRawValue, T>) -> T {
+        rawValue[keyPath: keyPath]
+    }
+    
+    /// Provides dynamic mutable access to members of the underlying raw value
+    /// - Parameter dynamicMember: The name of the member to access
+    /// - Returns: A function that forwards the member access to the raw value
+    @inlinable
+    public subscript<T>(dynamicMember keyPath: WritableKeyPath<RawValue, T>) -> T {
+        get {
+            rawValue[keyPath: keyPath]
+        }
+        set {
+            rawValue[keyPath: keyPath] = newValue
+        }
     }
 }
 

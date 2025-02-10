@@ -112,3 +112,39 @@ where TagRawValue: BidirectionalCollection {
 /// with constant-time complexity for index manipulation and subscripting operations.
 extension Tagged: RandomAccessCollection
 where TagRawValue: RandomAccessCollection {}
+
+/// Provides MutableCollection conformance for Tagged types wrapping mutable collections
+extension Tagged: MutableCollection 
+where TagRawValue: MutableCollection {
+    /// Sets the element at the specified position
+    /// - Parameters:
+    ///   - position: The position of the element to replace
+    ///   - newElement: The new element to add to the collection
+    @inlinable
+    public subscript(position: TagRawValue.Index) -> TagRawValue.Element {
+        get { rawValue[position] }
+        set { rawValue[position] = newValue }
+    }
+}
+
+/// Provides RangeReplaceableCollection conformance for Tagged types wrapping range-replaceable collections
+extension Tagged: RangeReplaceableCollection 
+where TagRawValue: RangeReplaceableCollection {
+    /// Creates a new, empty collection
+    @inlinable
+    public init() {
+        self.init(TagRawValue())
+    }
+    
+    /// Replaces the specified subrange of elements with the given collection
+    /// - Parameters:
+    ///   - subrange: The subrange of the collection to replace
+    ///   - newElements: The new elements to add to the collection
+    @inlinable
+    public mutating func replaceSubrange<C: Collection>(
+        _ subrange: Range<TagRawValue.Index>,
+        with newElements: C
+    ) where C.Element == Element {
+        rawValue.replaceSubrange(subrange, with: newElements)
+    }
+}
