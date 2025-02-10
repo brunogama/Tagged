@@ -5,8 +5,6 @@
 //  Created by Bruno da Gama Porciuncula on 09/02/25.
 //
 
-import Foundation
-
 /// Extension to provide collection type support for Tagged types.
 ///
 /// This file provides conformance to Swift's collection protocols for Tagged types whose raw values
@@ -38,13 +36,13 @@ import Foundation
 /// This allows Tagged types to be used in for-in loops and with sequence operations
 /// like map, filter, and reduce.
 extension Tagged: Sequence
-where TagRawValue: Sequence {
+where RawValue: Sequence {
     /// The type of iterator that will iterate over the elements
-    public typealias Iterator = TagRawValue.Iterator
+    public typealias Iterator = RawValue.Iterator
 
     /// Creates an iterator that will iterate over the elements of this sequence
     @inlinable
-    public func makeIterator() -> TagRawValue.Iterator {
+    public func makeIterator() -> RawValue.Iterator {
         rawValue.makeIterator()
     }
 }
@@ -56,12 +54,12 @@ where TagRawValue: Sequence {
 /// This allows Tagged types to be used with all Collection protocol methods
 /// and properties, such as count, isEmpty, first, last, etc.
 extension Tagged: Collection
-where TagRawValue: Collection {
+where RawValue: Collection {
     /// The type that represents a position in the collection
-    public typealias Index = TagRawValue.Index
+    public typealias Index = RawValue.Index
 
     /// The type of elements in the collection
-    public typealias Element = TagRawValue.Element
+    public typealias Element = RawValue.Element
 
     /// The position of the first element
     @inlinable
@@ -94,7 +92,7 @@ where TagRawValue: Collection {
 ///
 /// This allows Tagged types to be traversed both forward and backward efficiently.
 extension Tagged: BidirectionalCollection
-where TagRawValue: BidirectionalCollection {
+where RawValue: BidirectionalCollection {
     /// Returns the position immediately before the given index
     /// - Parameter index: A valid index of the collection
     /// - Returns: The previous index in the collection
@@ -111,38 +109,38 @@ where TagRawValue: BidirectionalCollection {
 /// This allows Tagged types to provide efficient random access to their elements,
 /// with constant-time complexity for index manipulation and subscripting operations.
 extension Tagged: RandomAccessCollection
-where TagRawValue: RandomAccessCollection {}
+where RawValue: RandomAccessCollection {}
 
 /// Provides MutableCollection conformance for Tagged types wrapping mutable collections
-extension Tagged: MutableCollection 
-where TagRawValue: MutableCollection {
+extension Tagged: MutableCollection
+where RawValue: MutableCollection {
     /// Sets the element at the specified position
     /// - Parameters:
     ///   - position: The position of the element to replace
     ///   - newElement: The new element to add to the collection
     @inlinable
-    public subscript(position: TagRawValue.Index) -> TagRawValue.Element {
+    public subscript(position: RawValue.Index) -> RawValue.Element {
         get { rawValue[position] }
         set { rawValue[position] = newValue }
     }
 }
 
 /// Provides RangeReplaceableCollection conformance for Tagged types wrapping range-replaceable collections
-extension Tagged: RangeReplaceableCollection 
-where TagRawValue: RangeReplaceableCollection {
+extension Tagged: RangeReplaceableCollection
+where RawValue: RangeReplaceableCollection {
     /// Creates a new, empty collection
     @inlinable
     public init() {
-        self.init(TagRawValue())
+        self.init(RawValue())
     }
-    
+
     /// Replaces the specified subrange of elements with the given collection
     /// - Parameters:
     ///   - subrange: The subrange of the collection to replace
     ///   - newElements: The new elements to add to the collection
     @inlinable
     public mutating func replaceSubrange<C: Collection>(
-        _ subrange: Range<TagRawValue.Index>,
+        _ subrange: Range<RawValue.Index>,
         with newElements: C
     ) where C.Element == Element {
         rawValue.replaceSubrange(subrange, with: newElements)

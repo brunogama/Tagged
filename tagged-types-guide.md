@@ -240,7 +240,7 @@ extension UserTransform {
         enriched.name = user.isVerified ? "\(user.name) ✓" : user.name
         return enriched
     }
-    
+
     static let enrichedToDTO = enrichUser >>>> toDTO
 }
 ```
@@ -309,7 +309,7 @@ extension UserValidator {
         !user.name.isEmpty &&
         user.name.count <= 50
     }
-    
+
     static let canBeVerified = UserValidator { user in
         isValid.rawValue(user) && !user.isVerified
     }
@@ -330,10 +330,10 @@ final class UserService {
             isVerified: true,
             joinDate: Date()
         )
-        
+
         // Transform to DTO
         let dto = UserTransform.toDTO.rawValue(userData)
-        
+
         // Transform back to domain model with type safety
         let response = APIResponse(
             data: TypeSafeUser(UserReverseTransform.fromDTO.rawValue(dto)),
@@ -344,18 +344,18 @@ final class UserService {
             ),
             status: APIStatus(code: 200, message: "Success")
         )
-        
+
         return TypeSafeResponse(response)
     }
-    
+
     func updateUser(_ user: TypeSafeUser) async throws -> TypeSafeResponse<TypeSafeUser> {
         guard UserValidator.isValid.rawValue(user.rawValue) else {
             throw NSError(domain: "UserValidation", code: 400)
         }
-        
+
         // Use composed transformation
         let dto = UserTransform.enrichedToDTO.rawValue(user.rawValue)
-        
+
         // Process and return response...
         return TypeSafeResponse(/* ... */)
     }

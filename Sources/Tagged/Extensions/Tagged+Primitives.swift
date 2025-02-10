@@ -5,8 +5,6 @@
 //  Created by Bruno da Gama Porciuncula on 09/02/25.
 //
 
-import Foundation
-
 /// Extension to provide literal expression support for Tagged types.
 ///
 /// This file provides conformance to various ExpressibleBy*Literal protocols, allowing Tagged types
@@ -40,73 +38,93 @@ import Foundation
 /// let metadata: Metadata = ["age": 25, "city": "New York"]
 /// ```
 
+extension Tagged: RawRepresentable {}
+
+extension Tagged: CustomPlaygroundDisplayConvertible {
+    @inlinable
+    public var playgroundDescription: Any {
+        String(describing: rawValue)
+    }
+}
+
+extension Tagged: Error where RawValue: Error {}
+
+@available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
+extension Tagged: Identifiable where RawValue: Identifiable {
+    @inlinable
+    public var id: RawValue.ID {
+        rawValue.id
+    }
+}
+
 /// Allows Tagged types to be initialized from integer literals
 extension Tagged: ExpressibleByIntegerLiteral
-where TagRawValue: ExpressibleByIntegerLiteral {
+where RawValue: ExpressibleByIntegerLiteral {
     /// Creates a new instance from an integer literal
     /// - Parameter value: The integer literal value
     @inlinable
-    public init(integerLiteral value: TagRawValue.IntegerLiteralType) {
-        self.init(TagRawValue(integerLiteral: value))
+    public init(integerLiteral value: RawValue.IntegerLiteralType) {
+        self.init(RawValue(integerLiteral: value))
     }
 }
 
 /// Allows Tagged types to be initialized from string literals
 extension Tagged: ExpressibleByStringLiteral
-where TagRawValue: ExpressibleByStringLiteral {
+where RawValue: ExpressibleByStringLiteral {
     /// Creates a new instance from a string literal
     /// - Parameter value: The string literal value
     @inlinable
-    public init(stringLiteral value: TagRawValue.StringLiteralType) {
-        self.init(TagRawValue(stringLiteral: value))
+    public init(stringLiteral value: RawValue.StringLiteralType) {
+        self.init(RawValue(stringLiteral: value))
     }
 }
 
 /// Allows Tagged types to be initialized from floating-point literals
 extension Tagged: ExpressibleByFloatLiteral
-where TagRawValue: ExpressibleByFloatLiteral {
+where RawValue: ExpressibleByFloatLiteral {
     /// Creates a new instance from a floating-point literal
     /// - Parameter value: The floating-point literal value
     @inlinable
-    public init(floatLiteral value: TagRawValue.FloatLiteralType) {
-        self.init(TagRawValue(floatLiteral: value))
+    public init(floatLiteral value: RawValue.FloatLiteralType) {
+        self.init(RawValue(floatLiteral: value))
     }
 }
 
 /// Allows Tagged types to be initialized from boolean literals
 extension Tagged: ExpressibleByBooleanLiteral
-where TagRawValue: ExpressibleByBooleanLiteral {
+where RawValue: ExpressibleByBooleanLiteral {
     /// Creates a new instance from a boolean literal
     /// - Parameter value: The boolean literal value
     @inlinable
-    public init(booleanLiteral value: TagRawValue.BooleanLiteralType) {
-        self.init(TagRawValue(booleanLiteral: value))
+    public init(booleanLiteral value: RawValue.BooleanLiteralType) {
+        self.init(RawValue(booleanLiteral: value))
     }
 }
 
 /// Allows Tagged types to be initialized from Unicode scalar literals
 extension Tagged: ExpressibleByUnicodeScalarLiteral
-where TagRawValue: ExpressibleByUnicodeScalarLiteral {
+where RawValue: ExpressibleByUnicodeScalarLiteral {
     /// Creates a new instance from a Unicode scalar literal
     /// - Parameter value: The Unicode scalar literal value
     @inlinable
     public init(
-        unicodeScalarLiteral value: TagRawValue.UnicodeScalarLiteralType
+        unicodeScalarLiteral value: RawValue.UnicodeScalarLiteralType
     ) {
-        self.init(TagRawValue(unicodeScalarLiteral: value))
+        self.init(RawValue(unicodeScalarLiteral: value))
     }
 }
 
 /// Allows Tagged types to be initialized from extended grapheme cluster literals
 extension Tagged: ExpressibleByExtendedGraphemeClusterLiteral
-where TagRawValue: ExpressibleByExtendedGraphemeClusterLiteral {
+where RawValue: ExpressibleByExtendedGraphemeClusterLiteral {
     /// Creates a new instance from an extended grapheme cluster literal
     /// - Parameter value: The extended grapheme cluster literal value
     @inlinable
     public init(
-        extendedGraphemeClusterLiteral value: TagRawValue.ExtendedGraphemeClusterLiteralType
+        extendedGraphemeClusterLiteral value: RawValue
+            .ExtendedGraphemeClusterLiteralType
     ) {
-        self.init(TagRawValue(extendedGraphemeClusterLiteral: value))
+        self.init(RawValue(extendedGraphemeClusterLiteral: value))
     }
 }
 
@@ -116,8 +134,8 @@ extension Tagged {
     /// - Parameter value: The binary integer value
     @inlinable
     public init<T: BinaryInteger>(_ value: T)
-    where TagRawValue: BinaryInteger {
-        self.init(TagRawValue(value))
+    where RawValue: BinaryInteger {
+        self.init(RawValue(value))
     }
 
     /// Creates a new instance from a binary integer, if it can be represented exactly
@@ -127,74 +145,42 @@ extension Tagged {
     public init?<T: BinaryInteger>(
         exactly value: T
     )
-    where TagRawValue: BinaryInteger {
-        guard let exact = TagRawValue(exactly: value) else { return nil }
+    where RawValue: BinaryInteger {
+        guard let exact = RawValue(exactly: value) else { return nil }
         self.init(exact)
     }
 }
 
-/// A protocol that enables array literal initialization for types that can be constructed from arrays
+/// Allows Tagged types to be initialized from array literals using unsafeBitCast.
 ///
-/// This protocol is used internally to support array literal initialization for Tagged types
-/// whose raw value is an array-like collection.
-public protocol ArrayLiteralProxy {
-    /// The type of elements in the array
-    associatedtype Element
-    
-    /// Creates a new instance from an array of elements
-    /// - Parameter elements: The array of elements to initialize with
-    init(arrayLiteralElements elements: [Element])
-}
-
-/// Conformance of Array to ArrayLiteralProxy to enable array literal initialization
-extension Array: ArrayLiteralProxy {
+/// This extension assumes that the Tagged's RawValue is layout‑compatible with
+/// an array literal initializer.
+extension Tagged: ExpressibleByArrayLiteral where RawValue: ExpressibleByArrayLiteral {
+    /// Creates a new instance from an array literal.
+    /// - Parameter elements: The array literal elements.
     @inlinable
-    public init(arrayLiteralElements elements: [Element]) {
-        self = [Element](elements)
+    public init(arrayLiteral elements: RawValue.ArrayLiteralElement...) {
+        let f = unsafeBitCast(
+            RawValue.init(arrayLiteral:) as ((RawValue.ArrayLiteralElement)...) -> RawValue,
+            to: (([RawValue.ArrayLiteralElement]) -> RawValue).self
+        )
+        self.init(f(elements))
     }
 }
 
-/// Allows Tagged types to be initialized from array literals when the raw value type is array-like
-extension Tagged: ExpressibleByArrayLiteral
-where TagRawValue: ArrayLiteralProxy {
-    /// Creates a new instance from an array literal
-    /// - Parameter elements: The array literal elements
-    @inlinable
-    public init(arrayLiteral elements: TagRawValue.Element...) {
-        self.init(TagRawValue(arrayLiteralElements: elements))
-    }
-}
-
-/// A protocol that enables dictionary literal initialization for types that can be constructed from key-value pairs
+/// Allows Tagged types to be initialized from dictionary literals using unsafeBitCast.
 ///
-/// This protocol is used internally to support dictionary literal initialization for Tagged types
-/// whose raw value is a dictionary-like collection.
-public protocol DictionaryLiteralProxy {
-    /// The type of keys in the dictionary
-    associatedtype Key: Hashable
-    /// The type of values in the dictionary
-    associatedtype Value
-    
-    /// Creates a new instance from an array of key-value pairs
-    /// - Parameter elements: The array of key-value pairs to initialize with
-    init(dictionaryLiteralArray elements: [(Key, Value)])
-}
-
-/// Conformance of Dictionary to DictionaryLiteralProxy to enable dictionary literal initialization
-extension Dictionary: DictionaryLiteralProxy {
-    @inlinable
-    public init(dictionaryLiteralArray elements: [(Key, Value)]) {
-        self = Dictionary(uniqueKeysWithValues: elements)
-    }
-}
-
-/// Allows Tagged types to be initialized from dictionary literals when the raw value type is dictionary-like
-extension Tagged: ExpressibleByDictionaryLiteral
-where RawValue: DictionaryLiteralProxy, RawValue.Key: Hashable {
-    /// Creates a new instance from a dictionary literal
-    /// - Parameter elements: The dictionary literal elements as key-value pairs
+/// This extension assumes that the Tagged's RawValue is layout‑compatible with
+/// a dictionary literal initializer.
+extension Tagged: ExpressibleByDictionaryLiteral where RawValue: ExpressibleByDictionaryLiteral {
+    /// Creates a new instance from a dictionary literal.
+    /// - Parameter elements: The dictionary literal elements as key-value pairs.
     @inlinable
     public init(dictionaryLiteral elements: (RawValue.Key, RawValue.Value)...) {
-        self.init(RawValue(dictionaryLiteralArray: elements))
+        let f = unsafeBitCast(
+            RawValue.init(dictionaryLiteral:) as ((RawValue.Key, RawValue.Value)...) -> RawValue,
+            to: (([(RawValue.Key, RawValue.Value)]) -> RawValue).self
+        )
+        self.init(f(elements))
     }
 }

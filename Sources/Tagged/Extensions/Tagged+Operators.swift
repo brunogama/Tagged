@@ -5,8 +5,6 @@
 //  Created by Bruno da Gama Porciuncula on 09/02/25.
 //
 
-import Foundation
-
 // MARK: - Additive Arithmetic Operators
 
 /// Implements the addition operator (+) for Tagged types that conform to TaggedAdditiveArithmetic
@@ -81,28 +79,31 @@ public func / <T: TaggedFloatingPointOperations>(lhs: T, rhs: T.Underlying) -> T
 /// Implements overflow addition operator (&+) for Tagged types with FixedWidthInteger raw values
 /// Performs wrapping addition that never traps on overflow
 @inlinable
-public func &+ <TypeTag, TagRawValue: FixedWidthInteger>(lhs: Tagged<TypeTag, TagRawValue>, rhs: Tagged<TypeTag, TagRawValue>) -> Tagged<TypeTag, TagRawValue> {
-    Tagged<TypeTag, TagRawValue>.add(lhs, rhs)
+public func &+ <Tag, RawValue: FixedWidthInteger>(
+    lhs: Tagged<Tag, RawValue>,
+    rhs: Tagged<Tag, RawValue>
+) -> Tagged<Tag, RawValue> {
+    Tagged<Tag, RawValue>.add(lhs, rhs)
 }
 
 /// Implements overflow subtraction operator (&-) for Tagged types with FixedWidthInteger raw values
 /// Performs wrapping subtraction that never traps on overflow
 @inlinable
-public func &- <TypeTag, TagRawValue: FixedWidthInteger>(
-    lhs: Tagged<TypeTag, TagRawValue>,
-    rhs: Tagged<TypeTag, TagRawValue>
-) -> Tagged<TypeTag, TagRawValue> {
-    Tagged<TypeTag, TagRawValue>.subtract(lhs, rhs)
+public func &- <Tag, RawValue: FixedWidthInteger>(
+    lhs: Tagged<Tag, RawValue>,
+    rhs: Tagged<Tag, RawValue>
+) -> Tagged<Tag, RawValue> {
+    Tagged<Tag, RawValue>.subtract(lhs, rhs)
 }
 
 /// Implements overflow multiplication operator (&*) for Tagged types with FixedWidthInteger raw values
 /// Performs wrapping multiplication that never traps on overflow
 @inlinable
-public func &* <TypeTag, TagRawValue: FixedWidthInteger>(
-    lhs: Tagged<TypeTag, TagRawValue>,
-    rhs: Tagged<TypeTag, TagRawValue>
-) -> Tagged<TypeTag, TagRawValue> {
-    Tagged<TypeTag, TagRawValue>.multiply(lhs, rhs)
+public func &* <Tag, RawValue: FixedWidthInteger>(
+    lhs: Tagged<Tag, RawValue>,
+    rhs: Tagged<Tag, RawValue>
+) -> Tagged<Tag, RawValue> {
+    Tagged<Tag, RawValue>.multiply(lhs, rhs)
 }
 
 // MARK: - Binary Floating Point Operators
@@ -110,9 +111,9 @@ public func &* <TypeTag, TagRawValue: FixedWidthInteger>(
 /// Implements division operator (/) for Tagged types with BinaryFloatingPoint raw values
 /// Allows division of a Tagged value by its raw value type
 @inlinable
-public func / <TypeTag, TagRawValue: BinaryFloatingPoint>(
-    lhs: Tagged<TypeTag, TagRawValue>,
-    rhs: TagRawValue
-) -> Tagged<TypeTag, TagRawValue> {
-    Tagged<TypeTag, TagRawValue>(lhs.rawValue / rhs)
+public func / <Tag, RawValue: BinaryFloatingPoint>(
+    lhs: Tagged<Tag, RawValue>,
+    rhs: RawValue
+) -> Tagged<Tag, RawValue> {
+    Tagged<Tag, RawValue>(lhs.rawValue / rhs)
 }

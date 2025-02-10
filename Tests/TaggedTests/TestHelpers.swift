@@ -9,34 +9,55 @@ import XCTest
 @testable import Tagged
 
 // MARK: - Test Types
+
+/// Namespace for test type tags used across test cases
 enum TestTags {
+    /// Tag for user ID values
     enum UserID {}
+    /// Tag for email values
     enum Email {}
+    /// Tag for price values
     enum Price {}
+    /// Tag for temperature values
     enum Temperature {}
+    /// Tag for list values
     enum List {}
+    /// Tag for counter values
     enum Counter {}
+    /// Tag for optional values
     enum OptionalValue {}
 }
 
 extension Tagged {
+    /// Creates a test fixture instance of a Tagged value
+    /// - Parameter value: The raw value to wrap
+    /// - Returns: A new Tagged instance with the provided value
     static func fixture(
-        _ value: TagRawValue
-    ) -> Tagged<TypeTag, TagRawValue> {
+        _ value: RawValue
+    ) -> Self {
         .init(value)
     }
 }
 
 // Common Type Aliases
+/// Type-safe user identifier
 typealias UserID = Tagged<TestTags.UserID, Int>
+/// Type-safe email address
 typealias Email = Tagged<TestTags.Email, String>
+/// Type-safe price value
 typealias Price = Tagged<TestTags.Price, Double>
+/// Type-safe temperature value
 typealias Temperature = Tagged<TestTags.Temperature, Double>
+/// Type-safe integer list
 typealias IntList = Tagged<TestTags.List, [Int]>
+/// Type-safe counter value
 typealias Counter = Tagged<TestTags.Counter, Int>
+/// Type-safe optional integer
 typealias OptionalInt = Tagged<TestTags.OptionalValue, Int?>
 
 // MARK: - Test Fixtures
+
+/// Provides common test fixtures for Tagged types
 enum TaggedFixtures {
     static let validUserID = UserID.fixture(42)
     static let validEmail = Email.fixture("test@example.com")

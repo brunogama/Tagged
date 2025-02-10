@@ -5,8 +5,6 @@
 //  Created by Bruno da Gama Porciuncula on 09/02/25.
 //
 
-import Foundation
-
 /// Extension to provide optional type support for Tagged types.
 ///
 /// This file provides a protocol-based approach to working with optional values in Tagged types.
@@ -60,30 +58,30 @@ extension Optional: OptionalType {
 
 /// Extension to provide optional type functionality for Tagged types
 extension Tagged
-where TagRawValue: OptionalType {
+where RawValue: OptionalType {
     /// Returns an instance representing the absence of a value
     @inlinable
     public static var none: Self {
-        .init(TagRawValue.none)
+        .init(RawValue.none)
     }
 
     /// Creates a new instance wrapping the given value
     /// - Parameter value: The value to wrap
     @inlinable
-    public init(wrapped value: TagRawValue.Wrapped) {
-        self.init(TagRawValue.some(value))
+    public init(wrapped value: RawValue.Wrapped) {
+        self.init(RawValue.some(value))
     }
 
     /// The wrapped value, if present
     @inlinable
-    public var wrapped: TagRawValue.Wrapped? {
+    public var wrapped: RawValue.Wrapped? {
         rawValue.optional
     }
 }
 
 /// Allows Tagged types with optional raw values to be initialized with nil
 extension Tagged: ExpressibleByNilLiteral
-where TagRawValue: OptionalType {
+where RawValue: OptionalType {
     /// Creates a new instance initialized with nil
     @inlinable
     public init(nilLiteral: ()) {

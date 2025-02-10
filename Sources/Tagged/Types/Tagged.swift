@@ -5,8 +5,6 @@
 //  Created by Bruno da Gama Porciuncula on 09/02/25.
 //
 
-import Foundation
-
 /// A type-safe wrapper that prevents mixing of values that share the same underlying type.
 ///
 /// The `Tagged` type provides compile-time guarantees that values of different semantic meanings
@@ -38,13 +36,7 @@ import Foundation
 ///   - TagRawValue: The underlying type that stores the actual value.
 @frozen
 @dynamicMemberLookup
-public struct Tagged<TypeTag, TagRawValue>: TaggedProtocol {
-    /// The type tag used to differentiate this tagged value from others
-    public typealias Tag = TypeTag
-
-    /// The underlying type that stores the actual value
-    public typealias RawValue = TagRawValue
-
+public struct Tagged<Tag, RawValue> {
     /// The wrapped value of the underlying type
     public var rawValue: RawValue
 
@@ -55,26 +47,18 @@ public struct Tagged<TypeTag, TagRawValue>: TaggedProtocol {
         self.rawValue = rawValue
     }
 
-    /// Alternative initializer that matches the standard library's style
-    /// - Parameter value: The value to wrap
     @inlinable
-    public init(rawValue value: RawValue) {
-        self.rawValue = value
+    public init(rawValue: RawValue) {
+      self.rawValue = rawValue
     }
-    
-    /// Provides dynamic access to members of the underlying raw value
-    /// - Parameter dynamicMember: The name of the member to access
-    /// - Returns: A function that forwards the member access to the raw value
-    @inlinable
-    public subscript<T>(dynamicMember keyPath: KeyPath<TagRawValue, T>) -> T {
-        rawValue[keyPath: keyPath]
-    }
-    
+
     /// Provides dynamic mutable access to members of the underlying raw value
     /// - Parameter dynamicMember: The name of the member to access
     /// - Returns: A function that forwards the member access to the raw value
     @inlinable
-    public subscript<T>(dynamicMember keyPath: WritableKeyPath<RawValue, T>) -> T {
+    public subscript<T>(
+        dynamicMember keyPath: WritableKeyPath<RawValue, T>
+    ) -> T {
         get {
             rawValue[keyPath: keyPath]
         }
@@ -82,8 +66,22 @@ public struct Tagged<TypeTag, TagRawValue>: TaggedProtocol {
             rawValue[keyPath: keyPath] = newValue
         }
     }
+
+    @inlinable
+    public func map<NewValue>(
+        _ transform: (RawValue) throws -> NewValue
+    ) rethrows -> Tagged<RawValue, NewValue> {
+        Tagged<RawValue, NewValue>(rawValue: try transform(rawValue))
+    }
+
+    @inlinable
+    public func coerced<NewTag>(
+        to type: NewTag.Type
+    ) -> Tagged<NewTag, RawValue> {
+        unsafeBitCast(self, to: Tagged<NewTag, RawValue>.self)
+    }
 }
 
 /// Conformance to Sendable for thread-safety when the underlying type is Sendable
 extension Tagged: Sendable
-where TagRawValue: Sendable {}
+where RawValue: Sendable {}

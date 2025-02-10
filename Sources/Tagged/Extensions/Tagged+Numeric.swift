@@ -6,8 +6,6 @@
 //  Created by Bruno da Gama Porciuncula on 09/02/25.
 //
 
-import Foundation
-
 /// Extension to provide numeric operations for Tagged types while maintaining type safety.
 ///
 /// This file implements a series of proxy protocols that mirror the standard library's numeric protocols.
@@ -59,30 +57,30 @@ public protocol TaggedAdditiveArithmetic {
 
 /// Implementation of TaggedAdditiveArithmetic for Tagged types where the raw value is AdditiveArithmetic
 extension Tagged: TaggedAdditiveArithmetic
-where TagRawValue: AdditiveArithmetic {
-    public typealias Underlying = TagRawValue
+where RawValue: AdditiveArithmetic {
+    public typealias Underlying = RawValue
 
     @inlinable
-    public static var zero: Tagged<TypeTag, TagRawValue> {
-        Tagged(TagRawValue.zero)
+    public static var zero: Self {
+        Self(RawValue.zero)
     }
 
     @inlinable
     public static func add(
-        _ lhs: Tagged<TypeTag, TagRawValue>,
-        _ rhs: Tagged<TypeTag, TagRawValue>
-    ) -> Tagged<TypeTag, TagRawValue> {
-        let sum: TagRawValue = lhs.rawValue + rhs.rawValue
-        return Tagged<TypeTag, TagRawValue>(sum)
+        _ lhs: Self,
+        _ rhs: Self
+    ) -> Self {
+        let sum: RawValue = lhs.rawValue + rhs.rawValue
+        return Self(sum)
     }
 
     @inlinable
     public static func subtract(
-        _ lhs: Tagged<TypeTag, TagRawValue>,
-        _ rhs: Tagged<TypeTag, TagRawValue>
-    ) -> Tagged<TypeTag, TagRawValue> {
-        let diff: TagRawValue = lhs.rawValue - rhs.rawValue
-        return Tagged<TypeTag, TagRawValue>(diff)
+        _ lhs: Self,
+        _ rhs: Self
+    ) -> Self {
+        let diff: RawValue = lhs.rawValue - rhs.rawValue
+        return Self(diff)
     }
 }
 
@@ -112,20 +110,20 @@ public protocol TaggedNumericArithmetic: TaggedAdditiveArithmetic {
 
 /// Implementation of TaggedNumericArithmetic for Tagged types where the raw value is Numeric
 extension Tagged: TaggedNumericArithmetic
-where TagRawValue: Numeric {
+where RawValue: Numeric {
     @inlinable
     public init?<T>(exactly source: T)
     where T: BinaryInteger {
-        guard let value = TagRawValue(exactly: source) else { return nil }
+        guard let value = RawValue(exactly: source) else { return nil }
         self.init(value)
     }
 
     @inlinable
     public static func multiply(
-        _ lhs: Tagged<TypeTag, TagRawValue>,
-        _ rhs: Tagged<TypeTag, TagRawValue>
-    ) -> Tagged<TypeTag, TagRawValue> {
-        Tagged(lhs.rawValue * rhs.rawValue)
+        _ lhs: Self,
+        _ rhs: Self
+    ) -> Self {
+        Self(lhs.rawValue * rhs.rawValue)
     }
 }
 
@@ -145,12 +143,12 @@ public protocol TaggedSignedNumeric: TaggedNumericArithmetic {
 
 /// Implementation of TaggedSignedNumeric for Tagged types where the raw value is SignedNumeric
 extension Tagged: TaggedSignedNumeric
-where TagRawValue: SignedNumeric {
+where RawValue: SignedNumeric {
     @inlinable
     public static func negate(
-        _ operand: Tagged<TypeTag, TagRawValue>
-    ) -> Tagged<TypeTag, TagRawValue> {
-        Tagged(-operand.rawValue)
+        _ operand: Self
+    ) -> Self {
+        Self(-operand.rawValue)
     }
 }
 
@@ -214,8 +212,8 @@ public protocol TaggedFloatingPointOperations {
 
 /// Implementation of TaggedFloatingPointOperations for Tagged types where the raw value is FloatingPoint
 extension Tagged: TaggedFloatingPointOperations
-where TagRawValue: FloatingPoint {
-    public typealias Underlying = TagRawValue
+where RawValue: FloatingPoint {
+    public typealias Underlying = RawValue
 
     @inlinable
     public var isNormal: Bool { rawValue.isNormal }
@@ -237,158 +235,158 @@ where TagRawValue: FloatingPoint {
 
     @inlinable
     public static func divide(
-        _ lhs: Tagged<TypeTag, TagRawValue>,
-        by rhs: TagRawValue
-    ) -> Tagged<TypeTag, TagRawValue> {
-        Tagged(lhs.rawValue / rhs)
+        _ lhs: Self,
+        by rhs: RawValue
+    ) -> Self {
+        Self(lhs.rawValue / rhs)
     }
 
     @inlinable
     public func remainder(
-        dividingBy other: Tagged<TypeTag, TagRawValue>
-    ) -> Tagged<TypeTag, TagRawValue> {
-        Tagged(rawValue.remainder(dividingBy: other.rawValue))
+        dividingBy other: Self
+    ) -> Self {
+        Self(rawValue.remainder(dividingBy: other.rawValue))
     }
 
     @inlinable
-    public func squareRoot() -> Tagged<TypeTag, TagRawValue> {
-        Tagged(rawValue.squareRoot())
+    public func squareRoot() -> Self {
+        Self(rawValue.squareRoot())
     }
 
     @inlinable
-    public func rounded() -> Tagged<TypeTag, TagRawValue> {
-        Tagged(rawValue.rounded())
+    public func rounded() -> Self {
+        Self(rawValue.rounded())
     }
 
     @inlinable
-    public var nextUp: Tagged<TypeTag, TagRawValue> {
-        Tagged(rawValue.nextUp)
+    public var nextUp: Self {
+        Self(rawValue.nextUp)
     }
 }
 
 /// Extension to provide magnitude property for integer Tagged types
 extension Tagged
-where TagRawValue: BinaryInteger {
+where RawValue: BinaryInteger {
     /// The magnitude of this value
     @inlinable
-    public var magnitude: TagRawValue.Magnitude {
+    public var magnitude: RawValue.Magnitude {
         rawValue.magnitude
     }
 }
 
 /// Extension to provide magnitude property for floating-point Tagged types
 extension Tagged
-where TagRawValue: FloatingPoint {
+where RawValue: FloatingPoint {
     /// The magnitude of this value
     @inlinable
-    public var magnitude: TagRawValue {
+    public var magnitude: RawValue {
         rawValue.magnitude
     }
 }
 
 /// Extension to provide Strideable conformance for Tagged types with Strideable raw values
 extension Tagged: Strideable
-where TagRawValue: Strideable {
+where RawValue: Strideable {
     @inlinable
     public func distance(
-        to other: Tagged<TypeTag, TagRawValue>
-    ) -> TagRawValue.Stride {
+        to other: Self
+    ) -> RawValue.Stride {
         rawValue.distance(to: other.rawValue)
     }
 
     @inlinable
     public func advanced(
-        by stride: TagRawValue.Stride
-    ) -> Tagged<TypeTag, TagRawValue> {
-        Tagged(rawValue.advanced(by: stride))
+        by stride: RawValue.Stride
+    ) -> Self {
+        Self(rawValue.advanced(by: stride))
     }
 }
 
 /// Extension to provide absolute value for signed numeric Tagged types
 extension Tagged
-where TagRawValue: SignedNumeric & Comparable {
+where RawValue: SignedNumeric & Comparable {
     /// Returns the absolute value of this value
     @inlinable
-    public static func abs(_ value: Tagged) -> Tagged {
-        Tagged(Swift.abs(value.rawValue))
+    public static func abs(_ value: Tagged) -> Self {
+        Self(Swift.abs(value.rawValue))
     }
 }
 
 /// Extension to provide overflow arithmetic operations for fixed-width integer Tagged types
 extension Tagged
-where TagRawValue: FixedWidthInteger {
+where RawValue: FixedWidthInteger {
     @inlinable
     public static func add(
-        _ lhs: Tagged<TypeTag, TagRawValue>,
-        _ rhs: Tagged<TypeTag, TagRawValue>
-    ) -> Tagged<TypeTag, TagRawValue> {
-        Tagged(lhs.rawValue &+ rhs.rawValue)
+        _ lhs: Self,
+        _ rhs: Self
+    ) -> Self {
+        Self(lhs.rawValue &+ rhs.rawValue)
     }
 
     @inlinable
     public static func subtract(
-        _ lhs: Tagged<TypeTag, TagRawValue>,
-        _ rhs: Tagged<TypeTag, TagRawValue>
-    ) -> Tagged<TypeTag, TagRawValue> {
-        Tagged(lhs.rawValue &- rhs.rawValue)
+        _ lhs: Self,
+        _ rhs: Self
+    ) -> Self {
+        Self(lhs.rawValue &- rhs.rawValue)
     }
 
     @inlinable
     public static func multiply(
-        _ lhs: Tagged<TypeTag, TagRawValue>,
-        _ rhs: Tagged<TypeTag, TagRawValue>
-    ) -> Tagged<TypeTag, TagRawValue> {
-        Tagged(lhs.rawValue &* rhs.rawValue)
+        _ lhs: Self,
+        _ rhs: Self
+    ) -> Self {
+        Self(lhs.rawValue &* rhs.rawValue)
     }
 
     @inlinable
     public static func *= (
-        lhs: inout Tagged<TypeTag, TagRawValue>,
-        rhs: TagRawValue
+        lhs: inout Self,
+        rhs: RawValue
     ) {
-        lhs = Tagged(lhs.rawValue &* rhs)
+        lhs = Self(lhs.rawValue &* rhs)
     }
 
     @inlinable
     public static func += (
-        lhs: inout Tagged<TypeTag, TagRawValue>,
-        rhs: Tagged<TypeTag, TagRawValue>
+        lhs: inout Self,
+        rhs: Self
     ) {
-        lhs = Tagged(lhs.rawValue &+ rhs.rawValue)
+        lhs = Self(lhs.rawValue &+ rhs.rawValue)
     }
 
     @inlinable
     public static func -= (
-        lhs: inout Tagged<TypeTag, TagRawValue>,
-        rhs: Tagged<TypeTag, TagRawValue>
+        lhs: inout Self,
+        rhs: Self
     ) {
-        lhs = Tagged(lhs.rawValue &- rhs.rawValue)
+        lhs = Self(lhs.rawValue &- rhs.rawValue)
     }
 
     @inlinable
-    public static func random(in range: Range<Tagged>) -> Tagged {
+    public static func random(in range: Range<Tagged>) -> Self {
         let lowerBound = range.lowerBound.rawValue
         let upperBound = range.upperBound.rawValue
-        let random = TagRawValue.random(in: lowerBound..<upperBound)
-        return Tagged(random)
+        let random = RawValue.random(in: lowerBound..<upperBound)
+        return Self(random)
     }
 
     @inlinable
-    public static func random(in range: ClosedRange<Tagged>) -> Tagged {
+    public static func random(in range: ClosedRange<Tagged>) -> Self {
         let lowerBound = range.lowerBound.rawValue
         let upperBound = range.upperBound.rawValue
-        let random = TagRawValue.random(in: lowerBound...upperBound)
-        return Tagged(random)
+        let random = RawValue.random(in: lowerBound...upperBound)
+        return Self(random)
     }
 }
 
 // MARK: - Floating Point Division
-extension Tagged where TagRawValue: BinaryFloatingPoint {
+extension Tagged where RawValue: BinaryFloatingPoint {
     @inlinable
     public static func / (
-        lhs: Tagged<TypeTag, TagRawValue>,
-        rhs: TagRawValue
-    ) -> Tagged<TypeTag, TagRawValue> {
-        Tagged(lhs.rawValue / rhs)
+        lhs: Self,
+        rhs: RawValue
+    ) -> Self {
+        Self(lhs.rawValue / rhs)
     }
 }
