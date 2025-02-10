@@ -1,11 +1,3 @@
-// swiftlint:disable file_length
-//
-//  Tagged+Conformances.swift
-//  Tagged
-//
-//  Created by Bruno da Gama Porciuncula on 09/02/25.
-//
-
 /// Extension to provide standard protocol conformances for Tagged types.
 ///
 /// This file provides conformance to common Swift protocols for Tagged types when their raw values

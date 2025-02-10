@@ -1,10 +1,3 @@
-//
-//  Tagged+Primitives.swift
-//  Tagged
-//
-//  Created by Bruno da Gama Porciuncula on 09/02/25.
-//
-
 /// Extension to provide literal expression support for Tagged types.
 ///
 /// This file provides conformance to various ExpressibleBy*Literal protocols, allowing Tagged types

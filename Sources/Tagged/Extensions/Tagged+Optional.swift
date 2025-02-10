@@ -1,10 +1,3 @@
-//
-//  Tagged+Optional.swift
-//  Tagged
-//
-//  Created by Bruno da Gama Porciuncula on 09/02/25.
-//
-
 /// Extension to provide optional type support for Tagged types.
 ///
 /// This file provides a protocol-based approach to working with optional values in Tagged types.

@@ -1,10 +1,3 @@
-//
-//  TaggedNumericTests.swift
-//  TaggedTests
-//
-//  Created by Bruno da Gama Porciuncula on 09/02/25.
-//
-
 import XCTest
 @testable import Tagged
 
